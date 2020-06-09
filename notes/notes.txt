@@ -1,0 +1,219 @@
+Whole Project Copyright D. Senesi - Tofu Heavy Industries 2020
+
+//------------------------------------------------
+// TO DO / TEST
+
+
+npc on npc collision
+npc on main collision
+remove aaa. (npc) acting
+remove deactivated - not used
+
+slow down player movement (by a tiny amount)
+sync colors to NES palette
+Fix all tile layers a jumble
+//------------------------------------------------
+// Testing
+
+battle -
+fighting both arms
+using tactics from page 1
+using items from page 1
+going into and backing out of menus
+Boss - Try and Run
+
+overworld
+buying and selling to npc
+virus working while walking around
+going into and backing out of menus
+
+To test:
+watch out for any decimal numbers - should be whole numbers only
+
+
+//------------------------------------------------
+// DONE
+
+
+Pause screen text alignment (obj_control - Draw)
+Changed level spread on tactic learning. Now every 3 levels, get all at 31 as opposed to 48(scr_level_up)
+
+removed getting last 2 tactics (scr_level_up)
+removed 'recompile & 'recalculate' as tactics (scr_init_tact)
+
+Question NPC
+npc[2] - changed to non-question npc 
+obj_main - Step : Removed check and handle question NPC
+
+
+Items can no longer be won from battles (scr_item_transfer)
+
+
+scr_battle
+Checks to make sure enemy target exists(player attack)
+Prevented critical hit from being a float(player attack)
+"Critical Hit!" text now shows up when attack critical (player attack)
+Checks to make sure enemy target exists when tactic target single (player tactic) 
+"Critical Hit!" text now shows up when attack critical (enemy attack)
+
+removed all instances of obj_trigger (rm_cave_RedMountain, rm_overworld, rm_town_Zeal)
+
+Added code that affects main to npc's main collision (obj_p_npc - collide main)
+
+//------------------------------------------------
+BUGS
+
+Strange view change when going into the story
+
+twice when killing all enemies with gas cloud, one went into negative health and didnt die until 2 attacks later
+
+Buying items does not check for total item number
+
+when selling something on right side, cursor doesnt shift right
+
+can equip helmet in any slot
+
+Some controllers not working.. only the analog stick controller is working
+
+In-game manual - some text 1080p gets stretched off the screen
+Intro - jarring because sprites appear instantly , and not fade in
+
+sometimes cant move after talking to npcs/sign. after dialog box disappeared, wasnt able to move. going into pause changed let player move again
+
+2nd town npc metadata, got stuck in dialog, but then after 'unfreeze', camera centered on her, player dissappeared. could still pause, not talk though
+
+game crashed after loki, randomly
+
+game crashed when equipping iron armor(armor gained from enemy loot)
+>>>>possibly iron armor was added to inventory incorrectly (would be first set of armor added, might happen with any armor addition) 
+
+
+*Battle - Somehow while fighting crane, going back up into tactics list from page 2 did the previous "page bug". but was still able to keep pressing up and cursor kept going up \HAPPENED ONCE\
+*Battle - In one battle, enemies just stopped attacking after one was killed 
+*Battle - On enemy damage numbers are not shown on the fight/move that kills it
+*Story - 2nd to last story trigger (in Zeal) bugs out (shows overworld first) then obj_main doesnt get placed in right place
+
+
+//------------------------------------------------
+// OTHER INFORMATION
+
+Art/Graphics contributions:
+Animator111 - enemy robots
+Kacper Wozniak - main robot
+Alexandr Makarov - Overworld tile set
+
+Regions - 5 Total (in overworld)
+
+ 
+HP for boss: x2 at each iteration 
+	start at: 200
+STAT for boss: +50 at each iteration
+	start at: 50
+
+Main HP gain per level (20-30)
+	start at(lvl1):100
+Main STAT gain per level (4,8)
+	start at(lvl1):5
+
+256/4 = 64
+256/3 = 85.3
+
+//STR~ATK~DEF~CRT = regular attack damage amount
+//ACC~EVA~AGI = chance to hit
+//LCK~Level~AGI = Chance to run (enemy run LVL~MOR)
+//MDEF~INT~LCK = Tactic damage
+
+        X = caster int..is also MDEF for enemy
+		T = target mdef
+		E = tactic effect #
+		CH = change
+		R() = Random inclusive
+
+		Tactic on self
+		CH = R(X+E,2xE)
+		
+		Tactic on target
+		CH = CH+(X-T) = R(E,2xE) 
+
+
+
+/*
+//Positive
+0 - Refresh //Gain HP each round
+1 - Regen //Gain TP each round
+2 - Wall //Block negative status effects
+3 - Shield //lowers tactic dmg taken
+
+//Negative
+4 - Silenced //Can't use Tactics
+5 - Virus //Lose HP each turn
+6 - Blind //EVA/ACC penalty
+7 - Slow //slows fightgauge
+*/
+
+/*
+// Permanent (Doesn't wear off at EOB)
+Refresh
+Virus
+Blind
+
+// Battle Only
+Regen
+Shield
+Wall
+Silenced
+Slow
+
+*/
+//------------------------------------------------
+// Current Functionality
+
+enemy group = using '255' will stop enemy list immediately, cannot use in middle slot
+
+*Last story array usage was removed, and trigger in rm_final_base deactivated
+*Enemy staggering in battle (End step) only has the "attack_order" array filled and used the first time, it doesnt work again, but that does set correct staggering for rest of battle.
+*If you enter with 20 items, and use some to take you < 20, you may still got get items from battle.. or it might not display correctly
+*KEYBOARD CONTROLS WORK FOR BUTTONS BUT NOT FOR ARROW KEYS, WHEN ARROW KEYS IMPLEMENTED, NOT EVEN GAMEPAD CONTROLS WILL WORK
+*only  statii removed at end of battle:statii[0] = "Recharge", statii[2] = "Wall", statii[3] = "Shield";
+*enemy variable - edef NOT USED
+*Fade out after battle room change shows lowest Y tiles strip (of room)
+*Treasure - cannot be right next to each other or will not work
+*Items & Equipment : Cannot drop anything, can only unequip or sell
+*Triggered events - dialogue - can't add because how dialogue advance is stuck in Z key
+*seller buy list doesnt draw duplicates together - doesnt need to, seller should never have duplicates
+*ITEM/TACTIC USE - using item/tactic on self doesnt apply mdef check
+*scr_stat_ch - does not check if status is already present, just adds it
+*Enemies cant use items on themselves
+*status removal/effect 'clock ticks' happen when turn is ready, also in overworld, every X alarm steps
+*TACTICS - Offensive tactics can not remove negative statii on target
+*No Statii ticks or affect is applied when in pause screen. 
+*Question/seller can't hit 'cancel' (X-buton) on Question/Seller NPC first list
+*Items dropped by enemies go into your inventory automatically, cannot pick and choose which you get. 
+*Status - Blind : if both attacker + fighter have status, no bonus/penalty applied
+*Can only sell/buy 1 item at a time
+*Equipment doesnt change player stats. Equipment stats are just calculated into needed equations
+*Equipment equpping selection list uses same list as item selection list (but different button selects)
+  
+*"deactivated" - all it does is prevent NPC from walking when dialogue box is up
+
+*scr_battle - draw: if one enemy type is between another type in enemy_slot, if the lower enemy_slot  types before the middle type, the middle type will be printed at top. Ok because consistent with selector/cursor action
+Example: enemy_slot[1,1,1,2,1] displays 1 x4, 2 x1,if 1 0-2 dies, displays 2 x1, 1x1
+
+*scr_battle - argument2 is actually not referenced in enemy fighting 
+*Trigger tiles cannot start fights. cannot pass tile ID because it disappears during room change
+*SCR_ENEMYDEATH : will not break if item/equip 1 is 0 and item/equip 2 has an item in it
+*Items placed in inventory is set in obj_main : room start. Wont work if set from obj_main "create" for some reason. (example code "tbrpg" also has variables set in room start, not create)
+*Removing PCTH for both enemy and main makes hitting actually possible
+*Player/Monsters use different routines for (attack,tactic). Cant combine due to so many different variables 
+*Enemy using tactics on self - lck increases morale,str increases crit
+
+//------------------------------------------------
+FUTURE
+
+add new battle areas - snow area and swamp factory, bridge
+be able to turn in place
+must face npc(or anything) to talk to them
+Have less enemy encounters... do not make too grindy
+make slow status work
+
+
